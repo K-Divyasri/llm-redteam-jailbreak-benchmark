@@ -1,0 +1,5 @@
+# Core `redteam` package is pure stdlib - zero runtime dependencies.
+# Everything below is for testing, the optional --real path, and the demo app.
+pytest
+litellm       # only used by redteam/real_llm.py (--real / has_api_key() gated)
+streamlit     # only used by app.py, the report-viewer demo

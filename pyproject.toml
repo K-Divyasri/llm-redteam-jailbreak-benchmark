@@ -1,0 +1,31 @@
+# pyproject.toml describes the project. It lets you run the tool as `redteam`
+# after `pip install -e .`, and it's where pytest reads its settings.
+
+[project]
+name = "redteam"
+version = "0.1.0"
+description = "An offensive red-team harness: attacks a chatbot guardrails layer and a tool-calling agent, scores every result against the OWASP Top 10 for LLM Applications (2025). Runs offline."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+# The optional real-LLM system-prompt-leak probe (redteam/real_llm.py).
+real = ["litellm>=1.40"]
+# The Streamlit demo UI (app.py).
+web = ["streamlit>=1.30"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+redteam = "redteam.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["redteam"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

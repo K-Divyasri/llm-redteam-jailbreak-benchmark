@@ -1,0 +1,64 @@
+# GitHub Actions workflow for the LLM Red-Team & Jailbreak Benchmark project.
+#
+# What this does: every push and pull request, GitHub spins up a fresh Linux
+# machine, installs the project's dependencies, regenerates the vendored agent's
+# tiny SQLite fixture (deterministic, so this is always safe), then runs the 28
+# pytest tests. All of it is offline - the corpus and both targets are
+# deterministic rule-based code, so nothing here needs an API key or the network.
+#
+# This is deliberately NOT a "does the guard still block everything" ship gate
+# like project 17's CI - the whole point of THIS project is that 16 of 29 attacks
+# are EXPECTED to get through the default-configured guard. The tests instead
+# pin the exact numbers this project found (see tests/test_report.py) - so CI
+# fails if the vendored `safeguard`/`tool_agent` code changes underneath this
+# project in a way that silently changes the finding count, which is the signal
+# that the report needs to be regenerated and re-read, not a bug to "fix" by
+# loosening the assertion.
+#
+# WHERE THIS FILE GOES: copy it to ".github/workflows/ci.yml" at the ROOT of your
+# repo (the repo root is this project folder,
+# ai/36-llm-redteam-jailbreak-benchmark/, the one that contains
+# build_from_scratch/, knowledge/, notebooks/, labs/, hosting/).
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  redteam:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r build_from_scratch/requirements.txt
+
+      # The vendored tool_agent's query_database tool reads this file. It's
+      # deterministic (no randomness) so regenerating it here always matches
+      # what's committed - this step exists so a fresh clone with the DB
+      # deliberately NOT committed (see .gitignore) still passes CI unattended.
+      - name: Build the agent's SQLite fixture
+        working-directory: build_from_scratch/vendor
+        run: python generate_data.py
+
+      - name: Run tests
+        working-directory: build_from_scratch
+        run: pytest
+
+      # Not a pass/fail gate (see the header comment) - just a visible artifact
+      # of what the scan looks like on this exact commit, printed into the log.
+      - name: Print the current scan summary
+        working-directory: build_from_scratch
+        run: python -m redteam full --generated-at "CI run $(date -u +%Y-%m-%dT%H:%MZ)"
