@@ -16,9 +16,8 @@
 # loosening the assertion.
 #
 # WHERE THIS FILE GOES: copy it to ".github/workflows/ci.yml" at the ROOT of your
-# repo (the repo root is this project folder,
-# ai/36-llm-redteam-jailbreak-benchmark/, the one that contains
-# build_from_scratch/, knowledge/, notebooks/, labs/, hosting/).
+# repo (the repo root is the folder that contains redteam/, vendor/, tests/,
+# hosting/).
 
 name: CI
 
@@ -43,22 +42,20 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r build_from_scratch/requirements.txt
+          pip install -r requirements.txt
 
       # The vendored tool_agent's query_database tool reads this file. It's
       # deterministic (no randomness) so regenerating it here always matches
       # what's committed - this step exists so a fresh clone with the DB
       # deliberately NOT committed (see .gitignore) still passes CI unattended.
       - name: Build the agent's SQLite fixture
-        working-directory: build_from_scratch/vendor
+        working-directory: vendor
         run: python generate_data.py
 
       - name: Run tests
-        working-directory: build_from_scratch
         run: pytest
 
       # Not a pass/fail gate (see the header comment) - just a visible artifact
       # of what the scan looks like on this exact commit, printed into the log.
       - name: Print the current scan summary
-        working-directory: build_from_scratch
         run: python -m redteam full --generated-at "CI run $(date -u +%Y-%m-%dT%H:%MZ)"

@@ -6,8 +6,8 @@ separately-repo'd projects in this same roadmap:
 
 | package | copied from | what it is |
 | --- | --- | --- |
-| `safeguard/` | `ai/17-guardrails-safety-layer/build_from_scratch/safeguard/` | The guardrails layer (injection/PII/topic/moderation/schema guards) wrapped around a demo "Northwind Bank" support bot. |
-| `tool_agent/` | `ai/11-function-calling-assistant/build_from_scratch/tool_agent/` | A tool-calling agent (calculator/weather/search/database) with a hand-rolled reason-act-observe loop. |
+| `safeguard/` | `safeguard/` in the `guardrails-safety-layer` repo | The guardrails layer (injection/PII/topic/moderation/schema guards) wrapped around a demo "Northwind Bank" support bot. |
+| `tool_agent/` | `tool_agent/` in the `function-calling-assistant` repo | A tool-calling agent (calculator/weather/search/database) with a hand-rolled reason-act-observe loop. |
 
 **Not one line has been changed.** This is the same "vendored unchanged, wrap
 around it" pattern used when Project 15 turned the ReAct research agent into a

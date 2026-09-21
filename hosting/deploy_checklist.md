@@ -1,6 +1,6 @@
 # Pre-publish checklist
 
-- [ ] `cd build_from_scratch && python -m pytest` - all 28 tests pass
+- [ ] `python -m pytest` - all 28 tests pass
 - [ ] `python -m redteam full --out REPORT.md --generated-at "<real UTC timestamp>"` -
       re-run and re-commit `REPORT.md` with a real timestamp before publishing
       (the version in the repo right now has a placeholder/build-time date -
@@ -8,7 +8,7 @@
 - [ ] `streamlit run app.py` locally - click "Run full scan", confirm all 4 tabs
       and the download button work
 - [ ] `git status` shows nothing unexpected - especially no `.env` file
-- [ ] `build_from_scratch/vendor/data/company.db` is present and committed (the
+- [ ] `vendor/data/company.db` is present and committed (the
       agent's database tool needs it; CI regenerates it too, but a fresh clone
       should work without running anything first)
 - [ ] Root `README.md` states the real, current headline numbers (raw 26/29,
